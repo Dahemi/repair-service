@@ -1,0 +1,36 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type RepairRecord {
+  id: ID!
+  vin: String!
+  repair_description: String!
+  repair_cost: Float!
+  status: String!
+  mechanic_name: String
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  findAllRepairRecords: [RepairRecord!]!
+  findRepairRecordByVIN(vin: String!): [RepairRecord!]!
+}
+
+type Mutation {
+  createRepairRecord(createRepairRecordInput: CreateRepairRecordInput!): RepairRecord!
+}
+
+input CreateRepairRecordInput {
+  vin: String!
+  repair_description: String!
+  repair_cost: Float!
+  mechanic_name: String
+  status: String
+}
