@@ -15,11 +15,7 @@ export class RepairRecordService {
 
 
   findAll() : Promise<RepairRecord[]> {
-    return this.repairRepository.find({
-      order:{
-        created_at: 'DESC'
-      }
-    })
+    return this.repairRepository.find();
   }
 
   findByVIN(vin: string): Promise<RepairRecord[]> {
@@ -28,7 +24,7 @@ export class RepairRecordService {
     })
   }
 
-  create(createRepairRecordInput: CreateRepairRecordInput) : Promise<RepairRecord>{
+  create(createRepairRecordInput: Partial<RepairRecord>) : Promise<RepairRecord>{
     const newRepairRecord = this.repairRepository.create(createRepairRecordInput);
     return this.repairRepository.save(newRepairRecord);
   }

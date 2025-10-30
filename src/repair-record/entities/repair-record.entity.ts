@@ -1,8 +1,9 @@
-import { ObjectType, Field,ID, Float } from '@nestjs/graphql';
+import { ObjectType, Field,ID, Float, Directive } from '@nestjs/graphql';
 import { Entity,PrimaryGeneratedColumn,Column, CreateDateColumn,UpdateDateColumn } from 'typeorm';
 
 @ObjectType()
 @Entity()
+@Directive('@key(fields: "id")')
 export class RepairRecord {
 
   @Field(() => ID)
@@ -11,7 +12,7 @@ export class RepairRecord {
 
   @Field()
   @Column()
-  vin: string;
+  vin: string; // Links to Vehicle entity via VIN
 
   @Field()
   @Column()

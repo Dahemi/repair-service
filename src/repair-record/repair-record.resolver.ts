@@ -1,15 +1,17 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveReference } from '@nestjs/graphql';
 import { RepairRecordService } from './repair-record.service';
 import { RepairRecord } from './entities/repair-record.entity';
 import { CreateRepairRecordInput } from './dto/create-repair-record.input';
 import { UpdateRepairRecordInput } from './dto/update-repair-record.input';
+import {Vehicle } from './entities/vehicle.entity';
+import { ResolveField, Parent } from '@nestjs/graphql';
 
 @Resolver(() => RepairRecord)
 export class RepairRecordResolver {
   constructor(private readonly repairRecordService: RepairRecordService) {}
 
   @Query(() => [RepairRecord], { name: 'findAllRepairRecords' })
-  findAll() {
+  findAll(): Promise<RepairRecord[]> {
     return this.repairRecordService.findAll();
   }
 
@@ -24,4 +26,16 @@ export class RepairRecordResolver {
   ): Promise<RepairRecord> {
     return this.repairRecordService.create(createRepairRecordInput);
   }
+
+}
+
+@Resolver(() => Vehicle)
+export class VehicleRepairResolver{
+  constructor(private readonly repairRecordService: RepairRecordService){}
+
+  @ResolveField(() => [RepairRecord])
+  async repairRecords(@Parent() vehicle: Vehicle): Promise<RepairRecord[]> {
+    return this.repairRecordService.findByVIN(vehicle.vin);
+  }
+
 }
