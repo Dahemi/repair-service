@@ -27,6 +27,11 @@ export class RepairRecordResolver {
     return this.repairRecordService.create(createRepairRecordInput);
   }
 
+  @Query(() => [String], { name: 'findAllRepairVINs' })
+  findAllVINs(): Promise<string[]> {
+    return this.repairRecordService.findAllVINs();
+  }
+
 }
 
 @Resolver(() => Vehicle)
@@ -38,4 +43,8 @@ export class VehicleRepairResolver{
     return this.repairRecordService.findByVIN(vehicle.vin);
   }
 
+  @ResolveReference()
+  resolveReference(reference: { vin: string }): Vehicle {
+    return { vin: reference.vin } as unknown as Vehicle;
+  }
 }

@@ -24,6 +24,15 @@ export class RepairRecordService {
     })
   }
 
+  async findAllVINs(): Promise<string[]> {
+    const result = await this.repairRepository
+      .createQueryBuilder('repair')
+      .select('DISTINCT repair.vin', 'vin')
+      .getRawMany();
+    
+    return result.map(item => item.vin);
+  }
+  
   create(createRepairRecordInput: Partial<RepairRecord>) : Promise<RepairRecord>{
     const newRepairRecord = this.repairRepository.create(createRepairRecordInput);
     return this.repairRepository.save(newRepairRecord);

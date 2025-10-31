@@ -26,6 +26,7 @@ type Vehicle {
 type Query {
   findAllRepairRecords: [RepairRecord!]!
   findRepairRecordByVIN(vin: String!): [RepairRecord!]!
+  findAllRepairVINs: [String!]!
 }
 
 type Mutation {
