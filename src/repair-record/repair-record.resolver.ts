@@ -1,8 +1,7 @@
-import { Resolver, Query, Mutation, Args, Int, ResolveReference } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { RepairRecordService } from './repair-record.service';
 import { RepairRecord } from './entities/repair-record.entity';
 import { CreateRepairRecordInput } from './dto/create-repair-record.input';
-import { UpdateRepairRecordInput } from './dto/update-repair-record.input';
 import {Vehicle } from './entities/vehicle.entity';
 import { ResolveField, Parent } from '@nestjs/graphql';
 
@@ -43,8 +42,4 @@ export class VehicleRepairResolver{
     return this.repairRecordService.findByVIN(vehicle.vin);
   }
 
-  @ResolveReference()
-  resolveReference(reference: { vin: string }): Vehicle {
-    return { vin: reference.vin } as unknown as Vehicle;
-  }
 }

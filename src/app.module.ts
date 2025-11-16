@@ -9,6 +9,7 @@ import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { Vehicle } from './repair-record/entities/vehicle.entity';
+import {RepairRecordResolver } from "./repair-record/repair-record.resolver";
 
 @Module({
   imports: [
@@ -35,6 +36,6 @@ import { Vehicle } from './repair-record/entities/vehicle.entity';
     })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,RepairRecordResolver],
 })
 export class AppModule {}
