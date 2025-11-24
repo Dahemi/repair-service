@@ -4,42 +4,81 @@ import { RepairRecord } from './entities/repair-record.entity';
 import { CreateRepairRecordInput } from './dto/create-repair-record.input';
 import {Vehicle } from './entities/vehicle.entity';
 import { ResolveField, Parent } from '@nestjs/graphql';
+import { Logger } from '@nestjs/common';
 
 @Resolver(() => RepairRecord)
 export class RepairRecordResolver {
+  private readonly logger = new Logger(RepairRecordResolver.name);
+
   constructor(private readonly repairRecordService: RepairRecordService) {}
 
   @Query(() => [RepairRecord], { name: 'findAllRepairRecords' })
-  findAll(): Promise<RepairRecord[]> {
-    return this.repairRecordService.findAll();
+  async findAll(): Promise<RepairRecord[]> {
+    const records = await this.repairRecordService.findAll();
+    return records;
   }
+
 
   @Query(() => [RepairRecord], { name: 'findRepairRecordByVIN' })
-  findByVIN(@Args('vin') vin: string): Promise<RepairRecord[]> {
-    return this.repairRecordService.findByVIN(vin);
+  async findByVIN(@Args('vin') vin: string): Promise<RepairRecord[]> {
+
+    if(!vin || vin.trim().length === 0){
+      this.logger.error('Repair service - Empty VIN provided');
+      throw new Error('VIN cannot be empty');
+    }
+
+    const records = await this.repairRecordService.findByVIN(vin);
+    return records;
   }
+
 
   @Mutation(() => RepairRecord)
-  createRepairRecord(
+  async createRepairRecord(
     @Args('createRepairRecordInput') createRepairRecordInput: CreateRepairRecordInput
   ): Promise<RepairRecord> {
-    return this.repairRecordService.create(createRepairRecordInput);
+
+    if (!createRepairRecordInput.vin || createRepairRecordInput.vin.trim().length === 0){
+      this.logger.error('Repair service - VIN is required');
+      throw new Error('VIN is required');
+    }
+
+    if (createRepairRecordInput.repair_cost < 0){
+      this.logger.error('Repair service - Invalid repair cost');
+      throw new Error('Repair cost must be greater than 0');
+    }
+
+    const record = await this.repairRecordService.create(createRepairRecordInput);
+    return record;
   }
 
+
   @Query(() => [String], { name: 'findAllRepairVINs' })
-  findAllVINs(): Promise<string[]> {
-    return this.repairRecordService.findAllVINs();
+  async findAllVINs(): Promise<string[]> {
+    const vins = await this.repairRecordService.findAllVINs();
+    return vins;
   }
 
 }
 
+
 @Resolver(() => Vehicle)
 export class VehicleRepairResolver{
+  private readonly logger = new Logger(VehicleRepairResolver.name);
+
   constructor(private readonly repairRecordService: RepairRecordService){}
 
   @ResolveField(() => [RepairRecord])
   async repairRecords(@Parent() vehicle: Vehicle): Promise<RepairRecord[]> {
-    return this.repairRecordService.findByVIN(vehicle.vin);
+    this.logger.log('Federation: ResolverField called for Vehcile.repairRecords');
+    this.logger.log(`Federation: Parent Vehicle VIN: ${vehicle.vin}`);
+
+    if (!vehicle.vin){
+      this.logger.error('Federation: No VIN in parent vehicle object');
+      throw new Error('VIN is required to detch repair records');
+    }
+
+    const records = await this.repairRecordService.findByVIN(vehicle.vin);
+    return records;
   }
 
 }

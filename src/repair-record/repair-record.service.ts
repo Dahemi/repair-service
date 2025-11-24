@@ -13,15 +13,14 @@ export class RepairRecordService {
     private repairRepository: Repository<RepairRecord>,
   ){}
 
-
-  findAll() : Promise<RepairRecord[]> {
-    return this.repairRepository.find();
+  async findAll() : Promise<RepairRecord[]> {
+    const records = await this.repairRepository.find();
+    return records;
   }
 
-  findByVIN(vin: string): Promise<RepairRecord[]> {
-    return this.repairRepository.find({
-      where:{vin}
-    })
+  async findByVIN(vin: string): Promise<RepairRecord[]> {
+    const records = await this.repairRepository.find({where:{vin}});
+    return records;
   }
 
   async findAllVINs(): Promise<string[]> {
@@ -30,12 +29,14 @@ export class RepairRecordService {
       .select('DISTINCT repair.vin', 'vin')
       .getRawMany();
     
-    return result.map(item => item.vin);
+    const vins = result.map(item => item.vin);
+    return vins;
   }
   
-  create(createRepairRecordInput: Partial<RepairRecord>) : Promise<RepairRecord>{
+  async create(createRepairRecordInput: Partial<RepairRecord>) : Promise<RepairRecord>{
     const newRepairRecord = this.repairRepository.create(createRepairRecordInput);
-    return this.repairRepository.save(newRepairRecord);
+    const saved = await this.repairRepository.save(newRepairRecord);
+    return saved;
   }
   
 }

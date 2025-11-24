@@ -3,7 +3,6 @@ import { Entity,PrimaryGeneratedColumn,Column, CreateDateColumn,UpdateDateColumn
 
 @ObjectType()
 @Entity()
-@Directive('@key(fields: "id")')
 export class RepairRecord {
 
   @Field(() => ID)
@@ -39,3 +38,9 @@ export class RepairRecord {
   updated_at: Date;
 
 }
+
+/**
+ * repair_cost uses decimal in DB and is typed as number in TS. 
+ * With TypeORM, decimal values are often returned as string to avoid precision loss. 
+ * Ensure conversion or use transformer to make GraphQL expose a Float
+ */
